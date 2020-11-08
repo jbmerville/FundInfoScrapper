@@ -1,6 +1,9 @@
 from time import sleep
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class SeleniumAction():
@@ -47,8 +50,7 @@ class SeleniumAction():
             xPath: str
                 The xpath of the element to select on the current page
             sleepTime: int, optional
-                The sleep time in seconds after executing the step, defaults to 0.5s
-
+                The sleep time in seconds after executing the step, defaults to wait until next element is clickable
 
         Returns
         -------
@@ -63,10 +65,11 @@ class SeleniumAction():
                     element.click()
                 if "sleepTime" in step:
                     sleep(step["sleepTime"])
-                else:
-                    sleep(0.5)
+                elif index < len(steps) - 1 and steps[index + 1]["action"] == "click":
+                    wait = WebDriverWait(self.driver, 5)
+                    wait.until(expected_conditions.element_to_be_clickable((By.XPATH, steps[index + 1]["xPath"])))
             except Exception as exception:
-                raise Exception("❌ %s failed on step #%d \"%s\" with error:\n%s" % (name, index, step["name"], exception))
+                raise Exception("❌ %s failed on step #%d \"%s\" with error:\n%s" % (name, index, step["name"], repr(exception)))
         print("✅ Successfully executed \"%s\"" % name)
 
     def getURL(self, url, sleepTime=1):
