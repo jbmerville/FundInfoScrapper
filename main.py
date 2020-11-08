@@ -69,16 +69,20 @@ def TravelToFundInfo(sa: SeleniumAction):
 
 
 def downloadPDFs(sa: SeleniumAction, firstX=10):
+    steps = []
     for i in range(firstX):
-        steps = [
-            {
-                "name": "downloadMR%d" % i,
-                "xPath": "/html/body/div[2]/div/div[2]/div[1]/div/div[2]/ul/li[4]/div/div[1]/div[%d]/div/div[1]" % i,
-                "action": "click",
-                "sleepTime": 3
-            },
-        ]
-        sa.executeStepsUsingXPath("Download PDF #%d" % i, steps)
+        steps.append({
+            "name": "downloadMR%d" % i,
+            "xPath": "/html/body/div[2]/div/div[2]/div[1]/div/div[2]/ul/li[%d]/div/div[1]/div[5]/div/div[1]" % (i + 2),
+            "action": "click",
+            "sleepTime": 3
+        }),
+        steps.append({
+            "name": "clickOffDownloadPopUp",
+            "xPath": "/html/body/div[2]/div/div[2]/div[1]/div/div[2]/div/div[2]",
+            "action": "click",
+        })
+    sa.executeStepsUsingXPath("Download PDF", steps)
 
 
 if __name__ == '__main__':
